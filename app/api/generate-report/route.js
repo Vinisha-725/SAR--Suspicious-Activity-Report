@@ -1,4 +1,4 @@
-import supabase from '../../../../lib/supabaseClient';
+import supabase from '../../../lib/supabaseClient';
 
 export async function POST(req) {
   try {
@@ -15,14 +15,56 @@ export async function POST(req) {
       raw_notes
     } = body;
 
-    // 🧠 Basic suspicion logic (no AI yet)
-    let is_suspicious = false;
+    // 🔥 CALL OPENAI
+    const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: `
+You are a banking compliance AI that generates Suspicious Activity Reports (SAR).
 
-    if (amount > 100000 || flag) {
-      is_suspicious = true;
-    }
+Analyze transaction data and return ONLY JSON in this format:
 
-    // 🧾 Generate SAR report (template)
+{
+  "is_suspicious": boolean,
+  "risk_level": "Low" | "Medium" | "High",
+  "incident_type": string,
+  "audit_trail": string,
+  "summary": string,
+  "recommended_action": string
+}
+`
+          },
+          {
+            role: "user",
+            content: `
+Customer ID: ${customer_id}
+Account: ${account_number}
+Transaction ID: ${transaction_id}
+Amount: INR ${amount}
+Type: ${transaction_type}
+Location: ${location}
+Flag: ${flag}
+Notes: ${raw_notes}
+`
+          }
+        ]
+      })
+    });
+
+    const aiData = await aiRes.json();
+    const content = aiData.choices?.[0]?.message?.content;
+
+    const parsed = JSON.parse(content);
+
+    // 🧾 FINAL REPORT (matches your Figma idea)
     const report = `
 SAR REPORT
 
@@ -30,23 +72,21 @@ Customer ID: ${customer_id}
 Account Number: ${account_number}
 Transaction ID: ${transaction_id}
 
-Transaction Type: ${transaction_type}
-Amount: INR ${amount}
-Location: ${location}
+Risk Level: ${parsed.risk_level}
+Incident Type: ${parsed.incident_type}
 
-Suspicious: ${is_suspicious ? "YES" : "NO"}
+Summary:
+${parsed.summary}
 
-Description:
-${raw_notes}
+Audit Trail:
+${parsed.audit_trail}
 
-Conclusion:
-${is_suspicious 
-  ? "This transaction shows suspicious characteristics and requires further investigation." 
-  : "No major suspicious activity detected."}
+Recommended Action:
+${parsed.recommended_action}
 `;
 
-    // 💾 Store in DB
-    const { error } = await supabase.from('reports').insert([
+    // 💾 SAVE
+    await supabase.from("reports").insert([
       {
         customer_id,
         account_number,
@@ -56,17 +96,18 @@ ${is_suspicious
         location,
         flag,
         raw_notes,
-        is_suspicious,
+        is_suspicious: parsed.is_suspicious,
         generated_report: report
       }
     ]);
 
-    if (error) throw error;
-
-    return Response.json({ report, is_suspicious });
+    return Response.json({
+      report,
+      structured: parsed
+    });
 
   } catch (err) {
     console.error(err);
-    return Response.json({ error: "Failed to generate report" }, { status: 500 });
+    return Response.json({ error: "AI processing failed" }, { status: 500 });
   }
 }
