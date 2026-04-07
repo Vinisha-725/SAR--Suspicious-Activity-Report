@@ -15,30 +15,33 @@ export async function POST(req) {
       raw_notes
     } = body;
 
-    // 🔥 CALL OPENAI
-    const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+    // Temporarily hardcoded for testing
+    const apiKey = process.env.OPENROUTER_API_KEY || "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";
+
+    // CALL OPENROUTER
+    const aiRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "google/gemma-2-9b-it",
         messages: [
           {
             role: "system",
             content: `
-You are a banking compliance AI that generates Suspicious Activity Reports (SAR).
+You are a banking compliance AI.
 
-Analyze transaction data and return ONLY JSON in this format:
+Return ONLY valid JSON.
 
 {
-  "is_suspicious": boolean,
+  "is_suspicious": true or false,
   "risk_level": "Low" | "Medium" | "High",
-  "incident_type": string,
-  "audit_trail": string,
-  "summary": string,
-  "recommended_action": string
+  "incident_type": "string",
+  "audit_trail": "string",
+  "summary": "string",
+  "recommended_action": "string"
 }
 `
           },
@@ -60,11 +63,43 @@ Notes: ${raw_notes}
     });
 
     const aiData = await aiRes.json();
-    const content = aiData.choices?.[0]?.message?.content;
 
-    const parsed = JSON.parse(content);
+    // 🧪 DEBUG LOG (check this in terminal if error happens)
+    console.log("AI RAW RESPONSE:", JSON.stringify(aiData, null, 2));
 
-    // 🧾 FINAL REPORT (matches your Figma idea)
+    let content = aiData?.choices?.[0]?.message?.content;
+
+    if (!content) {
+      throw new Error("Empty AI response");
+    }
+
+    // 🧠 CLEAN RESPONSE (remove accidental text wrapping)
+    content = content.trim();
+
+    // Remove ```json or ``` if present
+    if (content.startsWith("```")) {
+      content = content.replace(/```json|```/g, "").trim();
+    }
+
+    let parsed;
+
+    try {
+      parsed = JSON.parse(content);
+    } catch (parseError) {
+      console.error("❌ JSON PARSE FAILED:", content);
+
+      // 🛟 FALLBACK
+      parsed = {
+        is_suspicious: false,
+        risk_level: "Unknown",
+        incident_type: "Parsing Error",
+        audit_trail: "AI response could not be parsed properly.",
+        summary: content,
+        recommended_action: "Manual review required."
+      };
+    }
+
+    // 🧾 FINAL REPORT
     const report = `
 SAR REPORT
 
@@ -85,8 +120,8 @@ Recommended Action:
 ${parsed.recommended_action}
 `;
 
-    // 💾 SAVE
-    await supabase.from("reports").insert([
+    // 💾 SAVE TO SUPABASE
+    const { error } = await supabase.from("reports").insert([
       {
         customer_id,
         account_number,
@@ -101,13 +136,25 @@ ${parsed.recommended_action}
       }
     ]);
 
+    if (error) {
+      console.error("❌ DB ERROR:", error);
+      throw error;
+    }
+
     return Response.json({
       report,
       structured: parsed
     });
 
   } catch (err) {
-    console.error(err);
-    return Response.json({ error: "AI processing failed" }, { status: 500 });
+    console.error("🔥 FULL ERROR:", err.message);
+
+    return Response.json(
+      {
+        error: "AI processing failed",
+        details: err.message
+      },
+      { status: 500 }
+    );
   }
 }
