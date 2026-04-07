@@ -15,8 +15,12 @@ export async function POST(req) {
       raw_notes
     } = body;
 
-    // Temporarily hardcoded for testing
-    const apiKey = process.env.OPENROUTER_API_KEY || "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";
+    // Use environment variable only
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    
+    if (!apiKey) {
+      throw new Error("Missing OPENROUTER_API_KEY in environment variables");
+    }
 
     // CALL OPENROUTER
     const aiRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
