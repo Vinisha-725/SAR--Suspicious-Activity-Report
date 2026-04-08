@@ -1,0 +1,18 @@
+/* InvestigatorNotes.module.css */
+.wrap { display: flex; flex-direction: column; gap: 20px; }
+.notesList { display: flex; flex-direction: column; gap: 1px; }
+.note {
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+.noteMeta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.noteAuthor { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.noteDate { font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); }
+.noteText { font-size: 13px; color: var(--text-secondary); line-height: 1.6; white-space: pre-wrap; }
+.empty { font-size: 13px; color: var(--text-muted); padding: 16px 0; }
+.addNote { display: flex; flex-direction: column; gap: 10px; }
+.addNoteActions { display: flex; align-items: center; justify-content: space-between; }
+.hint { font-size: 11px; color: var(--text-muted); }

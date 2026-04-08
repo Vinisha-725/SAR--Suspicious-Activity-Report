@@ -1,0 +1,4 @@
+/* AlertsTrendChart.module.css */
+.wrap { width: 100%; }
+.chart { width: 100%; height: auto; display: block; }
+.empty { padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 13px; }

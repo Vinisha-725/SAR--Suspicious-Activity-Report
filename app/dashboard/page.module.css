@@ -1,0 +1,10 @@
+/* dashboard/page.module.css */
+.layout { display: flex; min-height: 100vh; }
+.main { flex: 1; margin-left: var(--sidebar-width); }
+.content { margin-top: var(--topbar-height); padding: 32px; display: flex; flex-direction: column; gap: 24px; max-width: 1400px; }
+.loading { color: var(--text-muted); font-size: 13px; padding: 48px 0; }
+.kpiGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.midRow { display: grid; grid-template-columns: 1fr 360px; gap: 16px; }
+.sidePanel { display: flex; flex-direction: column; gap: 16px; }
+.chartCard { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; }
+.chartTitle { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 16px; }

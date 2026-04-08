@@ -1,0 +1,20 @@
+/* cases/page.module.css */
+.layout { display: flex; min-height: 100vh; }
+.main { flex: 1; margin-left: var(--sidebar-width); }
+.content { margin-top: var(--topbar-height); padding: 32px; display: flex; flex-direction: column; gap: 20px; max-width: 1400px; }
+.loading { color: var(--text-muted); font-size: 13px; padding: 32px 0; }
+.tableWrap { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.table { width: 100%; border-collapse: collapse; }
+.table th { text-align: left; padding: 11px 14px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); background: var(--bg-surface); }
+.table td { padding: 13px 14px; border-bottom: 1px solid var(--border-subtle); font-size: 13px; color: var(--text-secondary); }
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background: var(--bg-elevated); }
+.mono { font-family: var(--font-mono); font-size: 12px; }
+.subject { color: var(--text-primary); font-weight: 500; }
+.statusBadge { font-size: 11px; padding: 3px 8px; border-radius: 3px; font-weight: 500; text-transform: capitalize; }
+.open { background: var(--blue-dim); color: var(--blue); }
+.under_review { background: var(--accent-dim); color: var(--accent); }
+.escalated { background: var(--red-dim); color: var(--red); }
+.closed { background: var(--bg-elevated); color: var(--text-muted); }
+.viewLink { font-size: 12px; color: var(--blue); transition: color var(--transition); }
+.viewLink:hover { color: var(--accent); }

@@ -1,0 +1,20 @@
+/* KpiCard.module.css */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color var(--transition);
+}
+.card:hover { border-color: var(--text-muted); }
+.top { display: flex; align-items: center; justify-content: space-between; }
+.label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600; }
+.icon { color: var(--text-muted); display: flex; }
+.value { font-size: 30px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.delta { font-size: 12px; font-family: var(--font-mono); }
+.up { color: var(--green); }
+.down { color: var(--red); }
+.neutral { color: var(--text-muted); }

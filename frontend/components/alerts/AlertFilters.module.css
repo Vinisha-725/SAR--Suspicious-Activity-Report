@@ -1,0 +1,28 @@
+/* AlertFilters.module.css */
+.filters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+}
+.field { min-width: 140px; }
+.dateRange { display: flex; gap: 10px; align-items: flex-end; }
+.dateField { display: flex; flex-direction: column; gap: 6px; }
+.dateLabel { font-size: 12px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.04em; text-transform: uppercase; }
+.dateInput {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+.dateInput:focus { border-color: var(--accent); }
+.actions { display: flex; gap: 8px; margin-left: auto; }

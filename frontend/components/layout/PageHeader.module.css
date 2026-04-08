@@ -1,0 +1,29 @@
+/* PageHeader.module.css */
+.header { padding: 0 0 28px 0; }
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.crumbWrap { display: flex; align-items: center; gap: 4px; }
+.separator { color: var(--text-muted); font-size: 12px; }
+.crumbLink { font-size: 12px; color: var(--text-muted); transition: color var(--transition); }
+.crumbLink:hover { color: var(--text-secondary); }
+.crumb { font-size: 12px; color: var(--text-secondary); }
+
+.row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+.actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }

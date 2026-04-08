@@ -1,0 +1,33 @@
+/* SupportingDocsUpload.module.css */
+.wrap { display: flex; flex-direction: column; gap: 20px; }
+.sectionTitle { font-size: 14px; font-weight: 600; color: var(--text-primary); padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.dropzone {
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+.dropzone:hover { border-color: var(--accent); background: var(--accent-dim); }
+.dragging { border-color: var(--accent); background: var(--accent-dim); }
+.fileInput { display: none; }
+.dropTitle { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+.dropSub { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+.docList { display: flex; flex-direction: column; gap: 8px; }
+.docItem {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px 14px;
+}
+.docIcon {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.04em;
+  background: var(--blue-dim); color: var(--blue);
+  padding: 4px 6px; border-radius: 3px; flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+.docInfo { flex: 1; min-width: 0; }
+.docName { font-size: 13px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.docSize { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
+.removeBtn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 3px; display: flex; transition: color var(--transition), background var(--transition); }
+.removeBtn:hover { color: var(--red); background: var(--red-dim); }
