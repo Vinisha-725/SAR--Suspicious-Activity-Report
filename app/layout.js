@@ -1,4 +1,4 @@
-import '../styles/globals.css';
+import '../frontend/styles/globals.css';
 
 export const metadata = {
   title: 'SAR Portal | FinCEN',
