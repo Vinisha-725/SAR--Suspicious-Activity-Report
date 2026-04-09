@@ -1,0 +1,16 @@
+/* ApprovalPanel.module.css */
+.wrap { display: flex; flex-direction: column; gap: 24px; }
+.sectionTitle { font-size: 14px; font-weight: 600; color: var(--text-primary); padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.checklist { display: flex; flex-direction: column; gap: 8px; }
+.checklistTitle { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
+.checkItem { display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 8px 12px; border-radius: var(--radius-sm); }
+.done { background: var(--green-dim); color: var(--green); }
+.missing { background: var(--bg-surface); color: var(--text-muted); }
+.checkIcon { font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.disclaimer {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; gap: 16px;
+}
+.disclaimerText { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+.confirmLabel { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+.checkbox { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }

@@ -1,0 +1,26 @@
+/* CaseSummaryCard.module.css */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.caseId { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.title { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+
+.status { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 3px; white-space: nowrap; }
+.open { background: var(--blue-dim); color: var(--blue); }
+.review { background: var(--accent-dim); color: var(--accent); }
+.escalated { background: var(--red-dim); color: var(--red); }
+.sarFiled { background: var(--green-dim); color: var(--green); }
+.closed { background: var(--bg-elevated); color: var(--text-muted); }
+
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.fieldLabel { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600; }
+.fieldValue { font-size: 13px; color: var(--text-primary); font-family: var(--font-mono); }
+.desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; border-top: 1px solid var(--border); padding-top: 16px; }

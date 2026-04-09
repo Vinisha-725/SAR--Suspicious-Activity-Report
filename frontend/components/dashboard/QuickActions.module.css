@@ -1,0 +1,17 @@
+/* QuickActions.module.css */
+.wrap { display: flex; flex-direction: column; gap: 8px; }
+.action {
+  display: block;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition);
+  text-align: center;
+}
+.primary { background: var(--accent); color: #0B1120; }
+.primary:hover { background: var(--accent-hover); }
+.secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border); }
+.secondary:hover { background: var(--bg-hover); }
+.ghost { background: transparent; color: var(--text-secondary); }
+.ghost:hover { background: var(--bg-elevated); color: var(--text-primary); }

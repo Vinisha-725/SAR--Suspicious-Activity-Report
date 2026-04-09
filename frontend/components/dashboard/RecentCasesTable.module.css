@@ -1,0 +1,42 @@
+/* RecentCasesTable.module.css */
+.tableWrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; }
+.table th {
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.table tr:last-child td { border-bottom: none; }
+.table tbody tr { transition: background var(--transition); }
+.table tbody tr:hover { background: var(--bg-elevated); }
+
+.caseLink { color: var(--blue); font-family: var(--font-mono); font-size: 12px; }
+.caseLink:hover { color: var(--accent); }
+.subject { color: var(--text-primary); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.assignee { font-size: 12px; }
+.date { font-family: var(--font-mono); font-size: 11px; white-space: nowrap; }
+
+.riskScore { font-family: var(--font-mono); font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 3px; }
+.riskCritical { background: var(--red-dim); color: var(--red); }
+.riskHigh { background: var(--orange-dim); color: var(--orange); }
+.riskMedium { background: var(--accent-dim); color: var(--accent); }
+.riskLow { background: var(--green-dim); color: var(--green); }
+
+.statusBadge { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.02em; }
+.open { background: var(--blue-dim); color: var(--blue); }
+.review { background: var(--accent-dim); color: var(--accent); }
+.escalated { background: var(--red-dim); color: var(--red); }
+.closed { background: var(--bg-elevated); color: var(--text-muted); }
+
+.empty { color: var(--text-muted); font-size: 13px; padding: 24px 0; }

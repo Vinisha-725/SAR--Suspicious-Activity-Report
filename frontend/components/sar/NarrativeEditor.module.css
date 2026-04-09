@@ -1,0 +1,27 @@
+/* NarrativeEditor.module.css */
+.wrap { display: flex; flex-direction: column; gap: 16px; }
+.header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.sectionTitle { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.charCount { font-size: 12px; font-family: var(--font-mono); }
+.ok { color: var(--green); }
+.warn { color: var(--accent); }
+.guidance {
+  font-size: 12px; color: var(--text-muted); line-height: 1.6;
+  background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.2);
+  border-radius: var(--radius-sm); padding: 12px 14px;
+}
+.editor {
+  width: 100%; background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  padding: 16px; font-family: var(--font-sans); font-size: 13px;
+  line-height: 1.7; resize: vertical; outline: none;
+  transition: border-color var(--transition);
+}
+.editor:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.editor::placeholder { color: var(--text-muted); }
+.tips { background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 14px 16px; }
+.tipsTitle { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 8px; }
+.tipsList { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.tipsList li { font-size: 12px; color: var(--text-muted); padding-left: 12px; position: relative; }
+.tipsList li::before { content: '—'; position: absolute; left: 0; }
