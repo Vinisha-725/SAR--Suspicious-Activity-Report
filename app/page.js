@@ -1,37 +1,70 @@
-"use client";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-
 export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    // Redirect to dashboard
-    router.push("/dashboard");
-  }, [router]);
-
   return (
-    <div style={{
+    <main style={{
+      minHeight: "100vh",
       display: "flex",
+      flexDirection: "column",
       justifyContent: "center",
       alignItems: "center",
-      height: "100vh",
-      backgroundColor: "#f8fafc",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+      padding: "2rem",
+      fontFamily: "system-ui, -apple-system, sans-serif"
     }}>
-      <div style={{ textAlign: "center" }}>
+      <div style={{
+        textAlign: "center",
+        maxWidth: "600px",
+        width: "100%"
+      }}>
+        <h1 style={{
+          fontSize: "2.5rem",
+          fontWeight: "700",
+          color: "#1e293b",
+          marginBottom: "1rem"
+        }}>
+          SAR Portal
+        </h1>
+        <p style={{
+          fontSize: "1.1rem",
+          color: "#64748b",
+          marginBottom: "2rem"
+        }}>
+          Suspicious Activity Reporting System
+        </p>
         <div style={{
-          width: "40px",
-          height: "40px",
-          border: "4px solid #e2e8f0",
-          borderTop: "4px solid #3b82f6",
-          borderRadius: "50%",
-          animation: "spin 1s linear infinite",
-          margin: "0 auto 16px"
-        }}></div>
-        <h2 style={{ color: "#1e293b", margin: "0" }}>Loading SAR System...</h2>
-        <p style={{ color: "#64748b", margin: "8px 0 0 0" }}>Redirecting to dashboard</p>
+          display: "flex",
+          gap: "1rem",
+          justifyContent: "center",
+          flexWrap: "wrap"
+        }}>
+          <a href="/sar-filing" style={{
+            display: "inline-flex",
+            alignItems: "center",
+            padding: "0.75rem 1.5rem",
+            backgroundColor: "#3b82f6",
+            color: "white",
+            textDecoration: "none",
+            borderRadius: "0.5rem",
+            fontSize: "1rem",
+            fontWeight: "500",
+            transition: "all 0.2s ease"
+          }}>
+            File New SAR
+          </a>
+          <a href="/dashboard" style={{
+            display: "inline-flex",
+            alignItems: "center",
+            padding: "0.75rem 1.5rem",
+            backgroundColor: "#64748b",
+            color: "white",
+            textDecoration: "none",
+            borderRadius: "0.5rem",
+            fontSize: "1rem",
+            fontWeight: "500",
+            transition: "all 0.2s ease"
+          }}>
+            Dashboard
+          </a>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
