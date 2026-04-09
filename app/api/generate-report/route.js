@@ -244,11 +244,6 @@ End of Report
       // Don't fail the whole process if case table doesn't exist
     }
 
-    if (error) {
-      console.error("❌ DB ERROR:", error);
-      throw error;
-    }
-
     return Response.json({
       report,
       structured: parsed
