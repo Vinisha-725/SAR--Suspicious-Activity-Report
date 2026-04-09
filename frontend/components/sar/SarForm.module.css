@@ -1,0 +1,58 @@
+/* SarForm.module.css */
+.wrap { display: flex; flex-direction: column; gap: 28px; }
+
+.stepNav {
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.stepBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 12px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-right: 1px solid var(--border);
+  transition: background var(--transition), color var(--transition);
+  font-family: var(--font-sans);
+}
+.stepBtn:last-child { border-right: none; }
+.stepBtn:hover { background: var(--bg-elevated); color: var(--text-secondary); }
+
+.stepActive { background: var(--accent-dim); color: var(--accent); }
+.stepDone { color: var(--green); }
+
+.stepNum {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+
+.stepLabel { font-size: 12px; font-weight: 500; }
+
+.stepContent {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  min-height: 300px;
+}
+
+.stepActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 4px;
+}

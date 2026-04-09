@@ -1,13 +1,8 @@
 import '../styles/globals.css';
 
 export const metadata = {
-<<<<<<< HEAD
-  title: 'SAR - Suspicious Activity Report',
-  description: 'AI-powered Suspicious Activity Report Audit Trail',
-=======
   title: 'SAR Portal | FinCEN',
   description: 'Suspicious Activity Reporting System',
->>>>>>> 05d49f62bcc402251b218c6b4f6e87652f188e0f
 };
 
 export default function RootLayout({ children }) {

@@ -36,15 +36,15 @@ export async function POST(req) {
                 content: `
 You are a banking compliance AI that generates Suspicious Activity Reports (SAR).
 
-Analyze transaction data and return ONLY JSON in this format:
+Return ONLY valid JSON.
 
 {
-  "is_suspicious": boolean,
+  "is_suspicious": true or false,
   "risk_level": "Low" | "Medium" | "High",
-  "incident_type": string,
-  "audit_trail": string,
-  "summary": string,
-  "recommended_action": string
+  "incident_type": "string",
+  "audit_trail": "string",
+  "summary": "string",
+  "recommended_action": "string"
 }
 
 Be thorough and professional in your analysis. Consider banking regulations and compliance requirements.
@@ -244,13 +244,25 @@ End of Report
       // Don't fail the whole process if case table doesn't exist
     }
 
+    if (error) {
+      console.error("❌ DB ERROR:", error);
+      throw error;
+    }
+
     return Response.json({
       report,
       structured: parsed
     });
 
   } catch (err) {
-    console.error(err);
-    return Response.json({ error: "AI processing failed" }, { status: 500 });
+    console.error("🔥 FULL ERROR:", err.message);
+
+    return Response.json(
+      {
+        error: "AI processing failed",
+        details: err.message
+      },
+      { status: 500 }
+    );
   }
 }

@@ -1,0 +1,19 @@
+/* investigations/page.module.css */
+.layout { display: flex; min-height: 100vh; }
+.main { flex: 1; margin-left: var(--sidebar-width); }
+.content { margin-top: var(--topbar-height); padding: 32px; display: flex; flex-direction: column; gap: 20px; max-width: 1400px; }
+.loading { color: var(--text-muted); font-size: 13px; padding: 32px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; gap: 10px; transition: border-color var(--transition); }
+.card:hover { border-color: var(--text-muted); }
+.cardTop { display: flex; align-items: center; justify-content: space-between; }
+.invId { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+.statusPill { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+.active { background: var(--blue-dim); color: var(--blue); }
+.closed { background: var(--bg-elevated); color: var(--text-muted); }
+.invTitle { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.invMeta { font-size: 12px; color: var(--text-muted); }
+.cardFooter { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border-subtle); }
+.caseCount { font-size: 12px; color: var(--text-muted); }
+.viewLink { font-size: 12px; color: var(--blue); transition: color var(--transition); }
+.viewLink:hover { color: var(--accent); }

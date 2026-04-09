@@ -1,0 +1,22 @@
+/* SelectField.module.css */
+.wrapper { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 12px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.04em; text-transform: uppercase; }
+.required { color: var(--red); margin-left: 3px; }
+.selectWrap { position: relative; }
+.chevron { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; display: flex; }
+.select {
+  width: 100%;
+  appearance: none;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 9px 36px 9px 12px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition);
+}
+.select option { background: var(--bg-elevated); }
+.select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.select.hasError { border-color: var(--red); }
+.error { font-size: 12px; color: var(--red); }
