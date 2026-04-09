@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import FinalReport from "./FinalReport";
 
 export default function SARFiling() {
   const router = useRouter();
@@ -135,7 +136,7 @@ export default function SARFiling() {
     }
   };
 
-  const validateStep = (step) => {
+  function validateStep(step) {
     switch (step) {
       case 1:
         return formData.customerId && formData.accountNumber && 
@@ -160,6 +161,8 @@ export default function SARFiling() {
     
     if (currentStep === 3) {
       generateSAR();
+    } else if (currentStep === 5) {
+      submitSAR();
     } else {
       setCurrentStep(prev => prev + 1);
     }
@@ -427,14 +430,22 @@ export default function SARFiling() {
                   </div>
                 </div>
 
-                <div style={styles.reportPreview}>
-                  <h4 style={styles.analysisTitle}>Generated SAR Report</h4>
+                  <div style={styles.reportPreview}>
+                  <h4 style={styles.analysisTitle}>Original Unformatted Generated Output</h4>
                   <pre style={styles.reportText}>
                     {generatedReport.report}
                   </pre>
                 </div>
               </div>
             )}
+          </div>
+        );
+
+      case 5:
+        return (
+          <div style={{ ...styles.stepContent, padding: '16px', backgroundColor: '#f1f5f9' }}>
+            <h3 style={{ ...styles.stepTitle, textAlign: 'center' }}>Final Official Report Preview</h3>
+            <FinalReport formData={formData} generatedReport={generatedReport} />
           </div>
         );
 
@@ -459,7 +470,7 @@ export default function SARFiling() {
 
       <div style={styles.progressContainer}>
         <div style={styles.progressSteps}>
-          {[1, 2, 3, 4].map((step) => (
+          {[1, 2, 3, 4, 5].map((step) => (
             <div key={step} style={styles.progressStep}>
               <div 
                 style={{
@@ -475,6 +486,7 @@ export default function SARFiling() {
                 {step === 2 && "Transaction"}
                 {step === 3 && "Activity"}
                 {step === 4 && "Review"}
+                {step === 5 && "Final"}
               </span>
             </div>
           ))}
@@ -505,7 +517,7 @@ export default function SARFiling() {
                 <div style={styles.spinner}></div>
                 Processing...
               </>
-            ) : currentStep === 4 ? (
+            ) : currentStep === 5 ? (
               "Submit SAR"
             ) : (
               "Next"
