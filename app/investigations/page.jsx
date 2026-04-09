@@ -1,8 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import Sidebar from '../../../components/layout/Sidebar';
-import Topbar from '../../../components/layout/Topbar';
-import PageHeader from '../../../components/layout/PageHeader';
 import { api } from '../../../lib/api';
 import styles from './page.module.css';
 
@@ -16,9 +13,7 @@ export default function InvestigationsPage() {
 
   return (
     <div className={styles.layout}>
-      <Sidebar />
       <div className={styles.main}>
-        <Topbar />
         <div className={styles.content}>
           <PageHeader
             title="Investigations"

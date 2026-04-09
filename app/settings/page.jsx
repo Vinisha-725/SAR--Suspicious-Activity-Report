@@ -1,8 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import Sidebar from '../../../components/layout/Sidebar';
-import Topbar from '../../../components/layout/Topbar';
-import PageHeader from '../../../components/layout/PageHeader';
 import InputField from '../../../components/common/InputField';
 import Button from '../../../components/common/Button';
 import { api } from '../../../lib/api';
