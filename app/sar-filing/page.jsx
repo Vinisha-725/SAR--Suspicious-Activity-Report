@@ -135,7 +135,7 @@ export default function SARFiling() {
     }
   };
 
-  const validateStep = (step) => {
+  function validateStep(step) {
     switch (step) {
       case 1:
         return formData.customerId && formData.accountNumber && 
@@ -153,6 +153,8 @@ export default function SARFiling() {
   };
 
   const nextStep = () => {
+    console.log("Next button clicked!");
+    
     if (!validateStep(currentStep)) {
       alert("Please fill in all required fields before proceeding.");
       return;
