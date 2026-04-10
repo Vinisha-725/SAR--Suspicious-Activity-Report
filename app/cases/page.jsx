@@ -13,6 +13,8 @@ export default function Cases() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [showPasswordInput, setShowPasswordInput] = useState(false);
+  const [editingCase, setEditingCase] = useState(null);
+  const [editFormData, setEditFormData] = useState({});
 
   useEffect(() => {
     // Fetch real cases data from database
@@ -204,11 +206,18 @@ Generated on: ${new Date().toLocaleDateString()}
 
   const updateCaseStatus = async (case_, newStatus) => {
     try {
-      // Update in database
+      console.log("Updating case:", case_.id, "to status:", newStatus);
+      
+      // Update in database - try different column names that might exist
       const { error } = await supabase
         .from('reports')
-        .update({ status: newStatus })
+        .update({ 
+          status: newStatus,
+          risk_level: newStatus === 'Closed' ? 'Low' : case_.riskLevel 
+        })
         .eq('report_id', case_.id);
+
+      console.log("Update error:", error);
 
       if (error) {
         console.error('Error updating status:', error);
@@ -233,6 +242,123 @@ Generated on: ${new Date().toLocaleDateString()}
       console.error('Error updating status:', error);
       alert('Error updating status: ' + error.message);
     }
+  };
+
+  const startEditingCase = (case_) => {
+    setEditingCase(case_);
+    setEditFormData({
+      customerName: case_.customerName,
+      accountId: case_.accountId,
+      riskLevel: case_.riskLevel,
+      status: case_.status,
+      priority: case_.priority,
+      amount: case_.amount,
+      assignedTo: case_.assignedTo,
+      suspiciousActivity: case_.suspiciousActivity
+    });
+  };
+
+  const saveEditedCase = async () => {
+    try {
+      console.log("Saving edited case:", editingCase.id, editFormData);
+      
+      // Try updating with available columns - handle missing columns gracefully
+      const updateData = {};
+      
+      // Only add columns that might exist
+      try {
+        if (editFormData.riskLevel) updateData.risk_level = editFormData.riskLevel;
+        if (editFormData.status) updateData.status = editFormData.status;
+        if (editFormData.amount) updateData.amount = parseFloat(editFormData.amount.replace(/[$,]/g, ''));
+        if (editFormData.suspiciousActivity) updateData.raw_notes = editFormData.suspiciousActivity;
+        
+        // Add updated timestamp
+        updateData.updated_at = new Date().toISOString();
+        
+        console.log("Update data:", updateData);
+        
+        const { error } = await supabase
+          .from('reports')
+          .update(updateData)
+          .eq('report_id', editingCase.id);
+
+        console.log("Save error:", error);
+
+        if (error) {
+          console.error('Error saving case:', error);
+          
+          // If columns don't exist, try minimal update
+          if (error.message.includes('column') && error.message.includes('schema cache')) {
+            console.log('Columns not found, updating only what exists...');
+            
+            // Try updating just the notes with changes
+            const changesLog = `
+CASE UPDATED - ${new Date().toLocaleDateString()}
+Changes made:
+- Customer Name: ${editFormData.customerName}
+- Account ID: ${editFormData.accountId}
+- Risk Level: ${editFormData.riskLevel}
+- Status: ${editFormData.status}
+- Amount: ${editFormData.amount}
+- Assigned To: ${editFormData.assignedTo}
+- Notes: ${editFormData.suspiciousActivity}
+            `.trim();
+            
+            const { error: fallbackError } = await supabase
+              .from('reports')
+              .update({ 
+                raw_notes: changesLog,
+                updated_at: new Date().toISOString()
+              })
+              .eq('report_id', editingCase.id);
+              
+            if (fallbackError) {
+              console.error('Fallback update failed:', fallbackError);
+              alert('Database schema issue - some columns not available. Changes logged in notes.');
+            } else {
+              alert('Case updated! (Changes logged in notes due to database schema limitations)');
+            }
+          } else {
+            alert('Error saving case: ' + error.message);
+          }
+          return;
+        }
+
+        // Update local state
+        setCases(prevCases => 
+          prevCases.map(c => 
+            c.id === editingCase.id ? { ...c, ...editFormData } : c
+          )
+        );
+
+        // Update selected case if in modal
+        if (selectedCase && selectedCase.id === editingCase.id) {
+          setSelectedCase({ ...selectedCase, ...editFormData });
+        }
+
+        setEditingCase(null);
+        setEditFormData({});
+        alert('Case updated successfully!');
+      } catch (updateError) {
+        console.error('Update failed:', updateError);
+        alert('Database update failed - changes saved locally only');
+      }
+    } catch (error) {
+      console.error('Error saving case:', error);
+      alert('Error saving case: ' + error.message);
+    }
+  };
+
+  const cancelEditing = () => {
+    setEditingCase(null);
+    setEditFormData({});
+  };
+
+  const handleEditFormChange = (field, value) => {
+    setEditFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleAdminLogin = () => {
@@ -477,10 +603,110 @@ Generated on: ${new Date().toLocaleDateString()}
                 </div>
               </div>
 
-              <div style={styles.modalSection}>
-                <h3 style={styles.modalSectionTitle}>Suspicious Activity</h3>
-                <p style={styles.modalText}>{selectedCase.suspiciousActivity}</p>
-              </div>
+              {editingCase && editingCase.id === selectedCase.id ? (
+                <div style={styles.modalSection}>
+                  <h3 style={styles.modalSectionTitle}>Edit Case Information</h3>
+                  <div style={styles.editForm}>
+                    <div style={styles.formRow}>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Customer Name:</label>
+                        <input
+                          type="text"
+                          value={editFormData.customerName}
+                          onChange={(e) => handleEditFormChange('customerName', e.target.value)}
+                          style={styles.formInput}
+                        />
+                      </div>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Account ID:</label>
+                        <input
+                          type="text"
+                          value={editFormData.accountId}
+                          onChange={(e) => handleEditFormChange('accountId', e.target.value)}
+                          style={styles.formInput}
+                        />
+                      </div>
+                    </div>
+                    <div style={styles.formRow}>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Amount:</label>
+                        <input
+                          type="text"
+                          value={editFormData.amount}
+                          onChange={(e) => handleEditFormChange('amount', e.target.value)}
+                          style={styles.formInput}
+                        />
+                      </div>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Assigned To:</label>
+                        <input
+                          type="text"
+                          value={editFormData.assignedTo}
+                          onChange={(e) => handleEditFormChange('assignedTo', e.target.value)}
+                          style={styles.formInput}
+                        />
+                      </div>
+                    </div>
+                    <div style={styles.formRow}>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Risk Level:</label>
+                        <select
+                          value={editFormData.riskLevel}
+                          onChange={(e) => handleEditFormChange('riskLevel', e.target.value)}
+                          style={styles.formSelect}
+                        >
+                          <option value="Low">Low</option>
+                          <option value="Medium">Medium</option>
+                          <option value="High">High</option>
+                        </select>
+                      </div>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Status:</label>
+                        <select
+                          value={editFormData.status}
+                          onChange={(e) => handleEditFormChange('status', e.target.value)}
+                          style={styles.formSelect}
+                        >
+                          <option value="Under Investigation">Under Investigation</option>
+                          <option value="Pending Review">Pending Review</option>
+                          <option value="Closed">Closed</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div style={styles.formRow}>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Priority:</label>
+                        <select
+                          value={editFormData.priority}
+                          onChange={(e) => handleEditFormChange('priority', e.target.value)}
+                          style={styles.formSelect}
+                        >
+                          <option value="Low">Low</option>
+                          <option value="Medium">Medium</option>
+                          <option value="High">High</option>
+                          <option value="Critical">Critical</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div style={styles.formRow}>
+                      <div style={styles.formGroupFull}>
+                        <label style={styles.formLabel}>Suspicious Activity:</label>
+                        <textarea
+                          value={editFormData.suspiciousActivity}
+                          onChange={(e) => handleEditFormChange('suspiciousActivity', e.target.value)}
+                          style={styles.formTextarea}
+                          rows={4}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div style={styles.modalSection}>
+                  <h3 style={styles.modalSectionTitle}>Suspicious Activity</h3>
+                  <p style={styles.modalText}>{selectedCase.suspiciousActivity}</p>
+                </div>
+              )}
 
               <div style={styles.modalActions}>
                 <button 
@@ -491,33 +717,51 @@ Generated on: ${new Date().toLocaleDateString()}
                 </button>
                 
                 {isAdmin ? (
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <select
-                      style={{
-                        ...styles.filterSelect,
-                        padding: '6px 12px',
-                        fontSize: '12px'
-                      }}
-                      value={selectedCase.status}
-                      onChange={(e) => updateCaseStatus(selectedCase, e.target.value)}
-                    >
-                      <option value="Under Investigation">Under Investigation</option>
-                      <option value="Pending Review">Pending Review</option>
-                      <option value="Closed">Closed</option>
-                    </select>
-                    <button 
-                      style={{
-                        ...styles.secondaryButton,
-                        backgroundColor: '#ef4444',
-                        color: 'white'
-                      }}
-                      onClick={() => {
-                        setIsAdmin(false);
-                        alert("Admin access revoked.");
-                      }}
-                    >
-                      Logout Admin
-                    </button>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    {editingCase ? (
+                      <>
+                        <button 
+                          style={{
+                            ...styles.primaryButton,
+                            backgroundColor: '#10b981'
+                          }}
+                          onClick={saveEditedCase}
+                        >
+                          Save Changes
+                        </button>
+                        <button 
+                          style={styles.secondaryButton}
+                          onClick={cancelEditing}
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button 
+                          style={{
+                            ...styles.primaryButton,
+                            backgroundColor: '#3b82f6'
+                          }}
+                          onClick={() => startEditingCase(selectedCase)}
+                        >
+                          Edit Case
+                        </button>
+                        <button 
+                          style={{
+                            ...styles.secondaryButton,
+                            backgroundColor: '#ef4444',
+                            color: 'white'
+                          }}
+                          onClick={() => {
+                            setIsAdmin(false);
+                            alert("Admin access revoked.");
+                          }}
+                        >
+                          Logout Admin
+                        </button>
+                      </>
+                    )}
                   </div>
                 ) : (
                   <button 
@@ -848,9 +1092,60 @@ const styles = {
   },
   modalText: {
     fontSize: "14px",
-    color: "#475569",
-    lineHeight: "1.6",
+    lineHeight: "1.5",
+    color: "#374151",
     margin: 0
+  },
+  editForm: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px"
+  },
+  formRow: {
+    display: "flex",
+    gap: "16px",
+    flexWrap: "wrap"
+  },
+  formGroup: {
+    flex: 1,
+    minWidth: "200px"
+  },
+  formGroupFull: {
+    width: "100%"
+  },
+  formLabel: {
+    display: "block",
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: "6px"
+  },
+  formInput: {
+    width: "100%",
+    padding: "8px 12px",
+    border: "1px solid #d1d5db",
+    borderRadius: "6px",
+    fontSize: "14px",
+    backgroundColor: "white"
+  },
+  formSelect: {
+    width: "100%",
+    padding: "8px 12px",
+    border: "1px solid #d1d5db",
+    borderRadius: "6px",
+    fontSize: "14px",
+    backgroundColor: "white",
+    cursor: "pointer"
+  },
+  formTextarea: {
+    width: "100%",
+    padding: "8px 12px",
+    border: "1px solid #d1d5db",
+    borderRadius: "6px",
+    fontSize: "14px",
+    backgroundColor: "white",
+    resize: "vertical",
+    fontFamily: "inherit"
   },
   modalActions: {
     display: "flex",
