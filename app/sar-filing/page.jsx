@@ -126,10 +126,14 @@ export default function SARFiling() {
     setLoading(true);
     
     try {
+      console.log("Submitting SAR with data:", formData);
+      console.log("Generated report:", generatedReport);
+      
       // The SAR was already saved when generated, now just show success and redirect
       alert("SAR Report submitted successfully! Case created in case management.");
       router.push("/cases");
     } catch (error) {
+      console.error("Error submitting SAR:", error);
       alert("Error submitting SAR: " + error.message);
     } finally {
       setLoading(false);

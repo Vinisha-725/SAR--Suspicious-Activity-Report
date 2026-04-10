@@ -10,19 +10,26 @@ export default function Cases() {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCase, setSelectedCase] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
 
   useEffect(() => {
     // Fetch real cases data from database
     const fetchCases = async () => {
       try {
-        // Try to fetch from cases table first
-        const { data: casesData, error } = await supabase
-          .from('cases')
+        // Try to fetch from reports table first (where SARs are actually stored)
+        console.log("Fetching from reports table...");
+        const { data: reportsData, error } = await supabase
+          .from('reports')
           .select('*')
-          .order('createdDate', { ascending: false });
+          .order('created_at', { ascending: false });
+
+        console.log("Reports data:", reportsData);
+        console.log("Reports error:", error);
 
         if (error) {
-          console.log('Cases table not found, using mock data:', error.message);
+          console.log('Reports table not found, using mock data:', error.message);
           // Fallback to mock data if table doesn't exist
           setCases([
             {
@@ -79,8 +86,21 @@ export default function Cases() {
             }
           ]);
         } else {
-          // Use real data from database
-          setCases(casesData || []);
+          // Use real data from database - map reports table to cases format
+          const mappedCases = (reportsData || []).map(report => ({
+            id: report.report_id || `SAR-${report.id}`,
+            customerName: report.customer_name || 'Unknown Customer',
+            accountId: report.account_number || 'Unknown Account',
+            riskLevel: report.risk_level || 'Medium',
+            status: report.status || 'Under Investigation',
+            createdDate: report.created_at ? new Date(report.created_at).toLocaleDateString() : 'Unknown',
+            lastUpdated: report.created_at ? new Date(report.created_at).toLocaleDateString() : 'Unknown',
+            assignedTo: 'Admin User',
+            suspiciousActivity: report.raw_notes || 'No activity specified',
+            amount: report.amount ? `$${report.amount.toLocaleString()}` : '$0',
+            priority: report.risk_level === 'High' ? 'High' : report.risk_level === 'Medium' ? 'Medium' : 'Low'
+          }));
+          setCases(mappedCases);
         }
       } catch (err) {
         console.log('Error fetching cases:', err.message);
@@ -144,6 +164,86 @@ export default function Cases() {
 
   const closeCaseDetails = () => {
     setSelectedCase(null);
+  };
+
+  const downloadSAR = (case_) => {
+    // Generate SAR report content
+    const sarContent = `
+SUSPICIOUS ACTIVITY REPORT (SAR)
+===============================
+
+Case ID: ${case_.id}
+Customer Name: ${case_.customerName}
+Account Number: ${case_.accountId}
+Amount: ${case_.amount}
+Risk Level: ${case_.riskLevel}
+Status: ${case_.status}
+
+SUSPICIOUS ACTIVITY:
+${case_.suspiciousActivity}
+
+ASSIGNED TO: ${case_.assignedTo}
+CREATED: ${case_.createdDate}
+LAST UPDATED: ${case_.lastUpdated}
+
+================================
+Generated on: ${new Date().toLocaleDateString()}
+    `.trim();
+
+    // Create and download file
+    const blob = new Blob([sarContent], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `SAR-${case_.id}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
+  const updateCaseStatus = async (case_, newStatus) => {
+    try {
+      // Update in database
+      const { error } = await supabase
+        .from('reports')
+        .update({ status: newStatus })
+        .eq('report_id', case_.id);
+
+      if (error) {
+        console.error('Error updating status:', error);
+        alert('Error updating status: ' + error.message);
+        return;
+      }
+
+      // Update local state
+      setCases(prevCases => 
+        prevCases.map(c => 
+          c.id === case_.id ? { ...c, status: newStatus } : c
+        )
+      );
+
+      // Update selected case if in modal
+      if (selectedCase && selectedCase.id === case_.id) {
+        setSelectedCase({ ...selectedCase, status: newStatus });
+      }
+
+      alert('Status updated successfully!');
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Error updating status: ' + error.message);
+    }
+  };
+
+  const handleAdminLogin = () => {
+    if (adminPassword === "admin123") {
+      setIsAdmin(true);
+      setShowPasswordInput(false);
+      setAdminPassword("");
+      alert("Admin access granted! You can now update case details.");
+    } else {
+      alert("Incorrect password. Access denied.");
+    }
   };
 
   if (loading) {
@@ -383,9 +483,112 @@ export default function Cases() {
               </div>
 
               <div style={styles.modalActions}>
-                <button style={styles.secondaryButton}>Download SAR Report</button>
-                <button style={styles.primaryButton}>Update Case Status</button>
+                <button 
+                  style={styles.secondaryButton}
+                  onClick={() => downloadSAR(selectedCase)}
+                >
+                  Download SAR Report
+                </button>
+                
+                {isAdmin ? (
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <select
+                      style={{
+                        ...styles.filterSelect,
+                        padding: '6px 12px',
+                        fontSize: '12px'
+                      }}
+                      value={selectedCase.status}
+                      onChange={(e) => updateCaseStatus(selectedCase, e.target.value)}
+                    >
+                      <option value="Under Investigation">Under Investigation</option>
+                      <option value="Pending Review">Pending Review</option>
+                      <option value="Closed">Closed</option>
+                    </select>
+                    <button 
+                      style={{
+                        ...styles.secondaryButton,
+                        backgroundColor: '#ef4444',
+                        color: 'white'
+                      }}
+                      onClick={() => {
+                        setIsAdmin(false);
+                        alert("Admin access revoked.");
+                      }}
+                    >
+                      Logout Admin
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    style={styles.primaryButton}
+                    onClick={() => setShowPasswordInput(true)}
+                  >
+                    Admin Access
+                  </button>
+                )}
               </div>
+
+              {showPasswordInput && (
+                <div style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 2000
+                }}>
+                  <div style={{
+                    backgroundColor: 'white',
+                    padding: '24px',
+                    borderRadius: '8px',
+                    width: '300px'
+                  }}>
+                    <h3 style={{ margin: '0 0 16px 0', color: '#1e293b' }}>Admin Login</h3>
+                    <input
+                      type="password"
+                      placeholder="Enter admin password"
+                      value={adminPassword}
+                      onChange={(e) => setAdminPassword(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '4px',
+                        marginBottom: '16px',
+                        fontSize: '14px'
+                      }}
+                    />
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        style={{
+                          ...styles.primaryButton,
+                          flex: 1
+                        }}
+                        onClick={handleAdminLogin}
+                      >
+                        Login
+                      </button>
+                      <button
+                        style={{
+                          ...styles.secondaryButton,
+                          flex: 1
+                        }}
+                        onClick={() => {
+                          setShowPasswordInput(false);
+                          setAdminPassword("");
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
