@@ -1,4 +1,4 @@
-# SAR - Suspicious Activity Report Generator
+# SAR - Suspicious Activity Report 
 
 An AI-powered banking compliance tool that automatically generates Suspicious Activity Reports (SAR) by analyzing transaction data using machine learning.
 
@@ -8,7 +8,6 @@ An AI-powered banking compliance tool that automatically generates Suspicious Ac
 - **Real-time Risk Assessment**: Automatically determines risk levels (Low/Medium/High)
 - **Comprehensive Reports**: Generates detailed SAR reports with audit trails
 - **Database Storage**: Stores all reports in Supabase for compliance tracking
-- **Modern UI**: Clean, responsive interface built with Next.js
 
 ## Tech Stack
 
